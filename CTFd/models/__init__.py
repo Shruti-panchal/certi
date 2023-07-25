@@ -5,9 +5,10 @@ from flask_marshmallow import Marshmallow
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import column_property, validates
-
+from sqlalchemy.orm import column_property, validates, relationship
 from CTFd.cache import cache
+from flask_migrate import Migrate
+from sqlalchemy import Column, Integer, ForeignKey
 
 db = SQLAlchemy()
 ma = Marshmallow()
@@ -58,6 +59,18 @@ class Notifications(db.Model):
     def __init__(self, *args, **kwargs):
         super(Notifications, self).__init__(**kwargs)
 
+class Certificate(db.Model):
+    __tablename__ = "certificate"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    username = db.Column(db.String(128))
+    challenge_name = db.Column(db.String(128))
+    place = db.Column(db.Integer)
+    team_name = db.Column(db.String(128))
+
+    user = db.relationship("Users", backref= "certificates")
+    def __init__(self, *args, **kwargs):
+        super(Certificate, self).__init__(**kwargs)
 
 class Pages(db.Model):
     __tablename__ = "pages"
@@ -89,7 +102,6 @@ class Pages(db.Model):
 
     def __repr__(self):
         return "<Pages {0}>".format(self.route)
-
 
 class Challenges(db.Model):
     __tablename__ = "challenges"
@@ -540,8 +552,7 @@ class Teams(db.Model):
     password = db.Column(db.String(128))
     secret = db.Column(db.String(128))
 
-    members = db.relationship(
-        "Users", backref="team", foreign_keys="Users.team_id", lazy="joined"
+    members = db.relationship("Users", backref="team", foreign_keys="Users.team_id", lazy="joined"
     )
 
     # Supplementary attributes

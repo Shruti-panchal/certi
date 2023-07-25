@@ -23,7 +23,7 @@ class _FormsWrapper:
 Forms = _FormsWrapper()
 
 from CTFd.forms import auth  # noqa: I001 isort:skip
-from CTFd.forms import self  # noqa: I001 isort:skip
+from CTFd.forms import self_forms  # noqa: I001 isort:skip
 from CTFd.forms import teams  # noqa: I001 isort:skip
 from CTFd.forms import setup  # noqa: I001 isort:skip
 from CTFd.forms import submissions  # noqa: I001 isort:skip
@@ -36,7 +36,7 @@ from CTFd.forms import awards  # noqa: I001 isort:skip
 from CTFd.forms import email  # noqa: I001 isort:skip
 
 Forms.auth = auth
-Forms.self = self
+Forms.self = self_forms
 Forms.teams = teams
 Forms.setup = setup
 Forms.submissions = submissions

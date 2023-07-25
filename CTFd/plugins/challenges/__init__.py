@@ -2,6 +2,7 @@ from flask import Blueprint
 
 from CTFd.models import (
     ChallengeFiles,
+    Certificate,
     Challenges,
     Fails,
     Flags,
@@ -9,7 +10,20 @@ from CTFd.models import (
     Solves,
     Tags,
     db,
+    Users
 )
+
+
+from CTFd.utils.user import (
+    authed,
+    get_current_team,
+    get_current_team_attrs,
+    get_current_user,
+    get_current_user_attrs,
+    is_admin,
+
+)
+
 from CTFd.plugins import register_plugin_assets_directory
 from CTFd.plugins.flags import FlagException, get_flag_class
 from CTFd.utils.uploads import delete_file
@@ -140,15 +154,59 @@ class BaseChallenge(object):
         """
         data = request.form or request.get_json()
         submission = data["submission"].strip()
-        solve = Solves(
-            user_id=user.id,
-            team_id=team.id if team else None,
-            challenge_id=challenge.id,
-            ip=get_ip(req=request),
-            provided=submission,
-        )
-        db.session.add(solve)
-        db.session.commit()
+        flags = Flags.query.filter_by(challenge_id=challenge.id).all()
+
+        for flag in flags:
+            try:
+                if get_flag_class(flag.type).compare(flag, submission):
+                    # The user's submission is correct
+                    solve = Solves(
+                        user_id=user.id,
+                        team_id=team.id if team else None,
+                        challenge_id=challenge.id,
+                        ip=get_ip(req=request),
+                        provided=submission,
+                    )
+                    db.session.add(solve)
+
+                    # Generate the certificate
+
+                    certificate = Certificate(
+                        username=user.name,
+                        challenge_name=challenge.name,
+                        place=team.place,
+                        user_id=user.id,
+                        team_name=team.name if team else None
+                    )
+                    db.session.add(certificate)
+
+                    db.session.commit()
+                    return
+            except FlagException as e:
+                pass
+
+
+
+
+
+        #
+        # solve = Solves(
+        #     user_id=user.id,
+        #     team_id=team.id if team else None,
+        #     challenge_id=challenge.id,
+        #     ip=get_ip(req=request),
+        #     provided=submission,
+        # )
+        # db.session.add(solve)
+        # db.session.commit()
+        #
+        # certificate = Certificate(
+        #     username=user.name,
+        #     challenge_name=challenge.name,
+        #     obtained_score=challenge.value
+        # )
+        # db.session.add(certificate)
+        # db.session.commit()
 
     @classmethod
     def fail(cls, user, team, challenge, request):

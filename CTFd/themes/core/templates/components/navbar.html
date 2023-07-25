@@ -16,29 +16,29 @@
                 {% for page in Plugins.user_menu_pages %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ page.route }}">{{ page.title }}</a>
-                    </li>
+                    </li> <!--page title-->
                 {% endfor %}
 
                 {% if Configs.account_visibility != 'admins' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('users.listing') }}">Users</a>
-                    </li>
+                    </li> <!--users-->
                     {% if Configs.user_mode == 'teams' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('teams.listing') }}">Teams</a>
-                    </li>
+                    </li> <!--teams-->
                     {% endif %}
                 {% endif %}
 
                 {% if Configs.account_visibility != 'admins' and Configs.score_visibility != 'admins' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('scoreboard.listing') }}">Scoreboard</a>
-                    </li>
+                    </li> <!--scoreboard-->
                 {% endif %}
 
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('challenges.listing') }}">Challenges</a>
-                </li>
+                </li> <!--challenges-->
             </ul>
 
             <hr class="d-sm-flex d-md-flex d-lg-none">
@@ -55,7 +55,7 @@
                                     <i class="fas fa-wrench pr-1"></i>Admin Panel
                                 </span>
                             </a>
-                        </li>
+                        </li> <!--admin panel-->
                     {% endif %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('views.notifications') }}">
@@ -68,7 +68,22 @@
                                 Notifications
                             </span>
                         </a>
-                    </li>
+                    </li> <!--notification-->
+                    {% if not is_admin() %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('views.certificate') }}">
+                            <span class="d-block" data-toggle="tooltip" data-placement="bottom" title="Certificate">
+                                <i class="fas fa-bell d-none d-md-block d-lg-none"></i>
+                            </span>
+                            <span class="d-sm-block d-md-none d-lg-block">
+                                <i class="fas fa-medal pr-1"></i>
+                                <span class="badge badge-pill badge-danger badge-certificate"></span>
+                                Achievements
+                            </span>
+                        </a>
+                    </li>  <!--certificate-->
+                    {% endif %}
+
                     {% if Configs.user_mode == "teams" %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('teams.private') }}">
@@ -79,7 +94,7 @@
                                 <i class="fas fa-users pr-1"></i>Team
                             </span>
                         </a>
-                    </li>
+                    </li> <!--team-->
                     {% endif %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('users.private') }}">
@@ -90,7 +105,7 @@
                                 <i class="fas fa-user-circle pr-1"></i>Profile
                             </span>
                         </a>
-                    </li>
+                    </li> <!--profile-->
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('views.settings') }}">
                             <span class="d-block" data-toggle="tooltip" data-placement="bottom" title="Settings">
@@ -100,7 +115,7 @@
                                 <i class="fas fa-cogs pr-1"></i>Settings
                             </span>
                         </a>
-                    </li>
+                    </li>  <!--setting -->
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('auth.logout') }}">
                             <span class="d-block" data-toggle="tooltip" data-placement="bottom" title="Logout">
@@ -110,7 +125,7 @@
                                 <i class="fas fa-sign-out-alt pr-1"></i><span class="d-lg-none">Logout</span>
                             </span>
                         </a>
-                    </li>
+                    </li>   <!--logout-->
                 {% else %}
                     {% if registration_visible() %}
                         <li class="nav-item">
@@ -122,7 +137,7 @@
                                     <i class="fas fa-user-plus pr-1"></i>Register
                                 </span>
                             </a>
-                        </li>
+                        </li> <!--register-->
                     {% endif %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('auth.login') }}">
@@ -133,7 +148,7 @@
                                 <i class="fas fa-sign-in-alt pr-1"></i>Login
                             </span>
                         </a>
-                    </li>
+                    </li> <!--login-->
                 {% endif %}
             </ul>
         </div>

@@ -1,6 +1,6 @@
 import os  # noqa: I001
 
-from flask import Blueprint, abort
+from flask import Blueprint, abort, render_template
 from flask import current_app as app
 from flask import (
     make_response,
@@ -28,6 +28,7 @@ from CTFd.models import (
     Admins,
     Files,
     Notifications,
+    Certificate,
     Pages,
     Teams,
     Users,
@@ -64,11 +65,27 @@ from CTFd.utils.security.signing import (
     serialize,
     unserialize,
 )
+
 from CTFd.utils.uploads import get_uploader, upload_file
 from CTFd.utils.user import authed, get_current_team, get_current_user, is_admin
 
 views = Blueprint("views", __name__)
-
+# certificate_bp = Blueprint('certificate', __name__, template_folder='templates')
+@views.route('/certificate', methods=["GET"])
+@authed_only
+def certificate():
+    certificate = Certificate.query.all()
+    # Loop through each certificate and print its attributes
+    for certificate in certificate:
+        if is_teams_mode:
+            print(f"ID: {certificate.id}, Team Name: {certificate.team_name}, User Name: {certificate.username} , Challenge: {certificate.challenge_name}, Place: {certificate.place}")
+        else:
+            print(f"ID: {certificate.id}, User Name: {certificate.username}, Challenge: {certificate.challenge_name}, Place: {certificate.place}")
+    return render_template('certificate.html', certificate=certificate)
+@views.route("/notifications", methods=["GET"])
+def notifications():
+    notifications = Notifications.query.order_by(Notifications.id.desc()).all()
+    return render_template("notifications.html", notifications=notifications)
 
 @views.route("/setup", methods=["GET", "POST"])
 def setup():
@@ -274,7 +291,6 @@ def setup():
             return render_template("setup.html", state=serialize(generate_nonce()))
     return redirect(url_for("views.static_html"))
 
-
 @views.route("/setup/integrations", methods=["GET", "POST"])
 def integrations():
     if is_admin() or is_setup() is False:
@@ -301,13 +317,6 @@ def integrations():
             abort(403)
     else:
         abort(403)
-
-
-@views.route("/notifications", methods=["GET"])
-def notifications():
-    notifications = Notifications.query.order_by(Notifications.id.desc()).all()
-    return render_template("notifications.html", notifications=notifications)
-
 
 @views.route("/settings", methods=["GET"])
 @authed_only
@@ -519,10 +528,10 @@ def healthcheck():
         return "ERR", 500
     return "OK", 200
 
-
 @views.route("/robots.txt")
 def robots():
     text = get_config("robots_txt", "User-agent: *\nDisallow: /admin\n")
     r = make_response(text, 200)
     r.mimetype = "text/plain"
     return r
+

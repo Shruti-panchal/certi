@@ -16,6 +16,7 @@ from werkzeug.utils import cached_property
 
 import CTFd.utils.config
 from CTFd import utils
+from CTFd.models import Certificate
 from CTFd.constants.themes import ADMIN_THEME, DEFAULT_THEME
 from CTFd.plugins import init_plugins
 from CTFd.utils.crypto import sha256
@@ -188,6 +189,7 @@ def create_app(config="CTFd.config.Config"):
 
         from CTFd.models import (  # noqa: F401
             Challenges,
+            Certificate,
             Fails,
             Files,
             Flags,
@@ -202,7 +204,7 @@ def create_app(config="CTFd.config.Config"):
 
         # This allows any changes to the SQLALCHEMY_DATABASE_URI to get pushed back in
         # This is mostly so we can force MySQL's charset
-        app.config["SQLALCHEMY_DATABASE_URI"] = str(url)
+        app.config['SQLALCHEMY_DATABASE_URI'] =r'sqlite:///C:\Users\DeLL\PycharmProjects\certificcate\CTFd\ctfd.db'
 
         # Register database
         db.init_app(app)
@@ -291,6 +293,9 @@ def create_app(config="CTFd.config.Config"):
         from CTFd.teams import teams
         from CTFd.users import users
         from CTFd.views import views
+        # from CTFd.api.v1.certificate import certificate_bp
+        #
+        # app.register_blueprint(certificate_bp)
 
         app.register_blueprint(views)
         app.register_blueprint(teams)
@@ -300,7 +305,6 @@ def create_app(config="CTFd.config.Config"):
         app.register_blueprint(auth)
         app.register_blueprint(api)
         app.register_blueprint(events)
-
         app.register_blueprint(admin)
 
         for code in {403, 404, 500, 502}:

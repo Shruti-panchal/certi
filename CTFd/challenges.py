@@ -11,7 +11,6 @@ from CTFd.utils.decorators import (
 from CTFd.utils.decorators.visibility import check_challenge_visibility
 from CTFd.utils.helpers import get_errors, get_infos
 from CTFd.utils.user import authed, get_current_team
-
 challenges = Blueprint("challenges", __name__)
 
 

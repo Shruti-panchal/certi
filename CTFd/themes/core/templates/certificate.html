@@ -1,27 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-{{ solve.challenge.name }}
- <div>
-        <h2 class="text-center">
-          {% if account.place %}
-            {{ account.place }} <small>place</small>
-          {% endif %}
-        </h2>
-        <h2 class="text-center">
-          {% if account.place %}
-            {{ account.score }} <small>points</small>
-          {% endif %}
-        </h2>
-      </div>
-<a href="{{ url_for('challenges.listing') }}#{{ solve.challenge.name }}-{{ solve.challenge.id }}">
-                    {{ solve.challenge.name }}
-                  </a>
+{% extends "base.html" %}
 
-{{ user.name }}
-</body>
-</html>
+{% block content %}
+	<div class="jumbotron">
+		<div class="container">
+			<h1>Achievements</h1>
+		</div>
+	</div>
+	<div class="container">
+		<h2>Certificates</h2>
+		<ul>
+  			{% for certificate in certificates %}
+   			 	<li>{{ certificate.challenge_name }} - place: {{ certificate.place }}</li>
+  			{% endfor %}
+		</ul>
+	</div>
+{% endblock %}
+
+<!--{% block entrypoint %}-->
+<!--	<script defer src="{{ url_for('views.themes', path='js/pages/notifications.js') }}"></script>-->
+<!--{% endblock %}-->

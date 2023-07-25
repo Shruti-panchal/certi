@@ -12,7 +12,7 @@ from CTFd.constants import RawEnum
 from CTFd.models import ChallengeFiles as ChallengeFilesModel
 from CTFd.models import Challenges
 from CTFd.models import ChallengeTopics as ChallengeTopicsModel
-from CTFd.models import Fails, Flags, Hints, HintUnlocks, Solves, Submissions, Tags, db
+from CTFd.models import Fails, Flags, Users, Teams, Hints, HintUnlocks, Solves, Submissions, Tags, db
 from CTFd.plugins.challenges import CHALLENGE_CLASSES, get_chal_class
 from CTFd.schemas.challenges import ChallengeSchema
 from CTFd.schemas.flags import FlagSchema
@@ -622,7 +622,7 @@ class ChallengeAttempt(Resource):
             if status:  # The challenge plugin says the input is right
                 if ctftime() or current_user.is_admin():
                     chal_class.solve(
-                        user=user, team=team, challenge=challenge, request=request
+                        user=user, team=team, challenge=challenge, request=request,
                     )
                     clear_standings()
                     clear_challenges()
