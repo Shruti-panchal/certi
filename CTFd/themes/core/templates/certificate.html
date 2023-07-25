@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{{ solve.challenge.name }}
+ <div>
+        <h2 class="text-center">
+          {% if account.place %}
+            {{ account.place }} <small>place</small>
+          {% endif %}
+        </h2>
+        <h2 class="text-center">
+          {% if account.place %}
+            {{ account.score }} <small>points</small>
+          {% endif %}
+        </h2>
+      </div>
+<a href="{{ url_for('challenges.listing') }}#{{ solve.challenge.name }}-{{ solve.challenge.id }}">
+                    {{ solve.challenge.name }}
+                  </a>
+
+{{ user.name }}
+</body>
+</html>
