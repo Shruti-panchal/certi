@@ -7,15 +7,27 @@
 		</div>
 	</div>
 	<div class="container">
-		<h2>Certificates</h2>
-		<ul>
-  			{% for certificate in certificates %}
-   			 	<li>{{ certificate.challenge_name }} - place: {{ certificate.place }}</li>
-  			{% endfor %}
-		</ul>
+		<h2>###########</h2>
+        {% if certificate %}
+        <ul>
+            {% for certificate in certificates %}
+                <li>
+                    ID: {{ certificate.id }},
+                    {% if certificate.team_id %}
+                        Team Name: {{ certificate.team_name }},
+                    {% endif %}
+                    User Name: {{ certificate.username }},
+                    Event Name: {{ certificate.ctf_name }},
+                    {% if certificate.team_id %}
+                        Team Place: {{ certificate.team_place }}
+                    {% else %}
+                        User's Place: {{ certificate.user_place }}
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+            <h2>No Certificates yet. </h2>
+        {% endif %}
 	</div>
 {% endblock %}
-
-<!--{% block entrypoint %}-->
-<!--	<script defer src="{{ url_for('views.themes', path='js/pages/notifications.js') }}"></script>-->
-<!--{% endblock %}-->

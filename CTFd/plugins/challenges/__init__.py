@@ -12,7 +12,14 @@ from CTFd.models import (
     db,
     Users
 )
-
+from CTFd.constants.config import ChallengeVisibilityTypes, Configs
+from CTFd.utils.config import is_teams_mode
+from CTFd.utils.dates import ctf_ended, ctf_paused, ctf_started
+from CTFd.utils.decorators import (
+    during_ctf_time_only,
+    require_complete_profile,
+    require_verified_emails,
+)
 
 from CTFd.utils.user import (
     authed,
@@ -171,22 +178,37 @@ class BaseChallenge(object):
 
                     # Generate the certificate
 
-                    certificate = Certificate(
-                        username=user.name,
-                        challenge_name=challenge.name,
-                        place=team.place,
-                        user_id=user.id,
-                        team_name=team.name if team else None
-                    )
-                    db.session.add(certificate)
+                    # certificate = Certificate(
+                    #     username=user.name,
+                    #     challenge_name=challenge.name,
+                    #     place=team.place,
+                    #     user_id=user.id,
+                    #     team_name=team.name if team else None
+                    # )
+                    # db.session.add(certificate)
 
                     db.session.commit()
                     return
             except FlagException as e:
                 pass
 
-
-
+    # if certificate:
+        #     for certificate in certificate:
+        #         try:
+        #             if ctf_ended is True:
+        #                 certificate = Certificate(
+        #                     username=user.name,
+        #                     challenge_name=challenge.name,
+        #                     place=team.place,
+        #                     user_id=user.id,
+        #                     team_name=team.name if team else None
+        #                 )
+        #                 db.session.add(certificate)
+        #                 db.session.commit()
+        #                 return
+        #         except:
+        #             print("Can't print certificate !!")
+        #
 
 
         #

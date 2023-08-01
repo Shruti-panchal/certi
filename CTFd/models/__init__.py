@@ -64,11 +64,13 @@ class Certificate(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     username = db.Column(db.String(128))
-    challenge_name = db.Column(db.String(128))
-    place = db.Column(db.Integer)
+    ctf_name = db.Column(db.String(128))
+    user_place = db.Column(db.Integer)
+    team_place = db.Column(db.Integer)
     team_name = db.Column(db.String(128))
 
-    user = db.relationship("Users", backref= "certificates")
+    user = db.relationship("Users", backref="certificate")
+    # team = db.relationship("Teams", backref="certificate")
     def __init__(self, *args, **kwargs):
         super(Certificate, self).__init__(**kwargs)
 

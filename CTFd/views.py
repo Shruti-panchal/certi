@@ -38,7 +38,7 @@ from CTFd.models import (
 from CTFd.utils import config, get_config, set_config
 from CTFd.utils import user as current_user
 from CTFd.utils import validators
-from CTFd.utils.config import is_setup, is_teams_mode
+from CTFd.utils.config import is_setup, is_teams_mode, is_users_mode
 from CTFd.utils.config.pages import build_markdown, get_page
 from CTFd.utils.config.visibility import challenges_visible
 from CTFd.utils.dates import ctf_ended, ctftime, view_after_ctf
@@ -65,23 +65,43 @@ from CTFd.utils.security.signing import (
     serialize,
     unserialize,
 )
-
+from CTFd import challenges
 from CTFd.utils.uploads import get_uploader, upload_file
 from CTFd.utils.user import authed, get_current_team, get_current_user, is_admin
 
+from CTFd.constants.config import ChallengeVisibilityTypes, Configs
+from CTFd.utils.config import is_teams_mode
+from CTFd.utils.dates import ctf_ended, ctf_paused, ctf_started
+
 views = Blueprint("views", __name__)
-# certificate_bp = Blueprint('certificate', __name__, template_folder='templates')
+
 @views.route('/certificate', methods=["GET"])
 @authed_only
+
 def certificate():
-    certificate = Certificate.query.all()
-    # Loop through each certificate and print its attributes
-    for certificate in certificate:
-        if is_teams_mode:
-            print(f"ID: {certificate.id}, Team Name: {certificate.team_name}, User Name: {certificate.username} , Challenge: {certificate.challenge_name}, Place: {certificate.place}")
+    user = Users.query.filter_by(id=session["id"]).first()
+    # team = Teams.query.filter_by(id=user.team_id).first()
+    certificate = Certificate.query.filter_by(user_id=user.id).first()
+
+    if certificate:
+        print(f'mode : {is_teams_mode()}')
+        if is_teams_mode():
+            print(
+                  f"ID: {certificate.id}, "
+                  f"Team Name: {certificate.team_name}, "
+                  f"User Name: {certificate.username} , "
+                  f"Event Name: {certificate.ctf_name}, "
+                  f"Team Place: {certificate.team_place}"
+            )
         else:
-            print(f"ID: {certificate.id}, User Name: {certificate.username}, Challenge: {certificate.challenge_name}, Place: {certificate.place}")
+            print(
+                f"ID: {certificate.id}, "
+                f"User Name: {certificate.username}, "
+                f"Event Name: {certificate.ctf_name}, "
+                f"User's Place: {certificate.user_place}")
+
     return render_template('certificate.html', certificate=certificate)
+
 @views.route("/notifications", methods=["GET"])
 def notifications():
     notifications = Notifications.query.order_by(Notifications.id.desc()).all()

@@ -7,12 +7,11 @@ from flask import current_app as app
 
 # isort:imports-firstparty
 from CTFd.cache import cache
-from CTFd.models import Configs, db
+from CTFd.models import Configs, db, Certificate, Teams, Users
 
 string_types = (str,)
 text_type = str
 binary_type = bytes
-
 
 def markdown(md):
     return cmarkgfm.markdown_to_html_with_extensions(

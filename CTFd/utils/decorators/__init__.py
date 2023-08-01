@@ -1,6 +1,6 @@
 import functools
 
-from flask import abort, jsonify, redirect, request, url_for
+from flask import abort, jsonify, redirect, request, url_for, session
 
 from CTFd.cache import cache
 from CTFd.utils import config, get_config
@@ -8,7 +8,14 @@ from CTFd.utils import user as current_user
 from CTFd.utils.config import is_teams_mode
 from CTFd.utils.dates import ctf_ended, ctf_started, ctftime, view_after_ctf
 from CTFd.utils.user import authed, get_current_team, get_current_user, is_admin
-
+from CTFd.models import (
+    Certificate,
+    Teams,
+    Users,
+    db,
+)
+from CTFd.utils import config
+from CTFd.utils.config import ctf_name
 
 def during_ctf_time_only(f):
     """
@@ -18,15 +25,52 @@ def during_ctf_time_only(f):
     """
 
     @functools.wraps(f)
+    @authed_only
     def during_ctf_time_only_wrapper(*args, **kwargs):
         if ctftime() or current_user.is_admin():
             return f(*args, **kwargs)
         else:
             if ctf_ended():
+                user = Users.query.filter_by(id=session["id"]).first()
+                team = Teams.query.filter_by(id=user.team_id).first()
+                # certificate = Certificate.query.filter_by(id=session["id"]).first()
+                # print(f'team name is : {team.name}') if is_teams_mode else None
+                # print(f'team place is : {team.place}') if team.place else None
+                # print(f'user name is : {user.name}')
+                # print(f'user place is : {user.place}')
+                # print(f'user id is : {user.id}')
+                # print(f'team id is : {user.team_id}')
+                # print(f'ctf name is : {config.ctf_name()}')
+                # print(is_teams_mode==True)
+                # print("ctfend wala")
+                # sql = Users.query.filter_by(id=user).first()
+                # print(sql)
+                certificate = Certificate()
+
+                certificate.user_id= user.id
+                certificate.username= user.name
+                certificate.ctf_name= config.ctf_name()
+
+                if user.team_id:
+                    if team.name!=None:
+                        certificate.team_name= team.name
+                        certificate.team_place= team.place
+                else:
+                    certificate.user_place=user.place
+                    print(f'Cert user place : {certificate.user_place}')
+
+                db.session.add(certificate)
+                db.session.commit()
+                # return certificate
+
                 if view_after_ctf():
+                    # certificate= gen_certificate()
+                    #
+                    # db.session.add(certificate)
+                    # db.session.commit()
                     return f(*args, **kwargs)
                 else:
-                    error = "{} has ended".format(config.ctf_name())
+                    error = "{} is ended".format(config.ctf_name())
                     abort(403, description=error)
             if ctf_started() is False:
                 if is_teams_mode() and get_current_team() is None:
