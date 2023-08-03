@@ -8,26 +8,28 @@
 	</div>
 	<div class="container">
 		<h2>###########</h2>
-        {% if certificate %}
-        <ul>
-            {% for certificate in certificates %}
-                <li>
-                    ID: {{ certificate.id }},
-                    {% if certificate.team_id %}
-                        Team Name: {{ certificate.team_name }},
-                    {% endif %}
-                    User Name: {{ certificate.username }},
-                    Event Name: {{ certificate.ctf_name }},
-                    {% if certificate.team_id %}
-                        Team Place: {{ certificate.team_place }}
-                    {% else %}
-                        User's Place: {{ certificate.user_place }}
-                    {% endif %}
-                </li>
-            {% endfor %}
-        </ul>
-        {% else %}
-            <h2>No Certificates yet. </h2>
+        {% if ctf_ended()==True %}
+            {% if certificate %}
+            <ul>
+                {% for certificate in certificates %}
+                    <li>
+                        ID: {{ certificate.id }},
+                        {% if certificate.team_id %}
+                            Team Name: {{ certificate.team_name }},
+                        {% endif %}
+                        User Name: {{ certificate.username }},
+                        Event Name: {{ certificate.ctf_name }},
+                        {% if certificate.team_id %}
+                            Team Place: {{ certificate.team_place }}
+                        {% else %}
+                            User's Place: {{ certificate.user_place }}
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+                <h2>No Certificates yet. </h2>
+            {% endif %}
         {% endif %}
 	</div>
 {% endblock %}

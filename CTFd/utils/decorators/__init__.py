@@ -33,18 +33,6 @@ def during_ctf_time_only(f):
             if ctf_ended():
                 user = Users.query.filter_by(id=session["id"]).first()
                 team = Teams.query.filter_by(id=user.team_id).first()
-                # certificate = Certificate.query.filter_by(id=session["id"]).first()
-                # print(f'team name is : {team.name}') if is_teams_mode else None
-                # print(f'team place is : {team.place}') if team.place else None
-                # print(f'user name is : {user.name}')
-                # print(f'user place is : {user.place}')
-                # print(f'user id is : {user.id}')
-                # print(f'team id is : {user.team_id}')
-                # print(f'ctf name is : {config.ctf_name()}')
-                # print(is_teams_mode==True)
-                # print("ctfend wala")
-                # sql = Users.query.filter_by(id=user).first()
-                # print(sql)
 
                 certificate = Certificate.query.filter_by(user_id=user.id).first()
                 if certificate is None:
@@ -67,10 +55,6 @@ def during_ctf_time_only(f):
                 # return certificate
 
                 if view_after_ctf():
-                    # certificate= gen_certificate()
-                    #
-                    # db.session.add(certificate)
-                    # db.session.commit()
                     return f(*args, **kwargs)
                 else:
                     error = "{} is ended".format(config.ctf_name())
