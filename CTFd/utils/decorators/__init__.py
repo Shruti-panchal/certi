@@ -45,18 +45,21 @@ def during_ctf_time_only(f):
                 # print("ctfend wala")
                 # sql = Users.query.filter_by(id=user).first()
                 # print(sql)
-                certificate = Certificate()
+
+                certificate = Certificate.query.filter_by(user_id=user.id).first()
+                if certificate is None:
+                    certificate = Certificate()
 
                 certificate.user_id= user.id
                 certificate.username= user.name
                 certificate.ctf_name= config.ctf_name()
 
                 if user.team_id:
-                    if team.name!=None:
+                    if team.name:
                         certificate.team_name= team.name
                         certificate.team_place= team.place
                 else:
-                    certificate.user_place=user.place
+                    certificate.user_place=user.account.place
                     print(f'Cert user place : {certificate.user_place}')
 
                 db.session.add(certificate)

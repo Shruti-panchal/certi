@@ -92,6 +92,7 @@ def users_detail(user_id):
     if user.account:
         score = user.account.get_score(admin=True)
         place = user.account.get_place(admin=True)
+
     else:
         score = None
         place = None
