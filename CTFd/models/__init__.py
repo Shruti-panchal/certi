@@ -68,8 +68,7 @@ class Certificate(db.Model):
     user_place = db.Column(db.Integer)
     team_place = db.Column(db.Integer)
     team_name = db.Column(db.String(128))
-
-    user = db.relationship("Users", backref="certificate")
+    date = db.Column(db.DateTime())
     # team = db.relationship("Teams", backref="certificate")
     def __init__(self, *args, **kwargs):
         super(Certificate, self).__init__(**kwargs)

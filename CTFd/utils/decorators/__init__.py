@@ -1,5 +1,5 @@
 import functools
-
+from datetime import datetime
 from flask import abort, jsonify, redirect, request, url_for, session
 
 from CTFd.cache import cache
@@ -34,13 +34,14 @@ def during_ctf_time_only(f):
                 user = Users.query.filter_by(id=session["id"]).first()
                 team = Teams.query.filter_by(id=user.team_id).first()
 
-                certificate = Certificate.query.filter_by(user_id=user.id).first()
+                certificate = Certificate.query.filter_by(user_id=user.id, ctf_name=config.ctf_name()).first()
                 if certificate is None:
                     certificate = Certificate()
 
                 certificate.user_id= user.id
                 certificate.username= user.name
                 certificate.ctf_name= config.ctf_name()
+                certificate.date= datetime.now()
 
                 if user.team_id:
                     if team.name:
@@ -48,7 +49,6 @@ def during_ctf_time_only(f):
                         certificate.team_place= team.place
                 else:
                     certificate.user_place=user.account.place
-                    print(f'Cert user place : {certificate.user_place}')
 
                 db.session.add(certificate)
                 db.session.commit()
@@ -65,7 +65,6 @@ def during_ctf_time_only(f):
                 else:
                     error = "{} has not started yet".format(config.ctf_name())
                     abort(403, description=error)
-
     return during_ctf_time_only_wrapper
 
 

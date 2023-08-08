@@ -1,4 +1,5 @@
 import os  # noqa: I001
+import datetime
 
 from flask import Blueprint, abort, render_template
 from flask import current_app as app
@@ -10,7 +11,9 @@ from flask import (
     send_file,
     session,
     url_for,
+    Response
 )
+
 from flask.helpers import safe_join
 from jinja2.exceptions import TemplateNotFound
 from sqlalchemy.exc import IntegrityError
@@ -41,8 +44,8 @@ from CTFd.utils import validators
 from CTFd.utils.config import is_setup, is_teams_mode, is_users_mode
 from CTFd.utils.config.pages import build_markdown, get_page
 from CTFd.utils.config.visibility import challenges_visible
-from CTFd.utils.dates import ctf_ended, ctftime, view_after_ctf
-from CTFd.utils.decorators import authed_only
+from CTFd.utils.dates import ctf_ended, ctftime, view_after_ctf, unix_time
+from CTFd.utils.decorators import authed_only, during_ctf_time_only
 from CTFd.utils.email import (
     DEFAULT_PASSWORD_RESET_BODY,
     DEFAULT_PASSWORD_RESET_SUBJECT,
@@ -71,7 +74,10 @@ from CTFd.utils.user import authed, get_current_team, get_current_user, is_admin
 
 from CTFd.constants.config import ChallengeVisibilityTypes, Configs
 from CTFd.utils.config import is_teams_mode
-from CTFd.utils.dates import ctf_ended, ctf_paused, ctf_started
+from CTFd.utils.dates import ctf_ended, ctf_paused, ctf_started, ctftime
+from PIL import Image, ImageDraw, ImageFont
+import io
+
 
 views = Blueprint("views", __name__)
 
@@ -80,27 +86,69 @@ views = Blueprint("views", __name__)
 
 def certificate():
     user = Users.query.filter_by(id=session["id"]).first()
-    # team = Teams.query.filter_by(id=user.team_id).first()
-    certificate = Certificate.query.filter_by(user_id=user.id).first()
 
-    if certificate:
-        print(f'mode : {is_teams_mode()}')
-        if is_teams_mode():
-            print(
-                  f"ID: {certificate.id}, "
-                  f"Team Name: {certificate.team_name}, "
-                  f"User Name: {certificate.username} , "
-                  f"Event Name: {certificate.ctf_name}, "
-                  f"Team Place: {certificate.team_place}"
-            )
-        else:
-            print(
-                f"ID: {certificate.id}, "
-                f"User Name: {certificate.username}, "
-                f"Event Name: {certificate.ctf_name}, "
-                f"User's Place: {certificate.user_place}")
+    certificates = Certificate.query.filter_by(user_id=user.id).all()
 
-    return render_template('certificate.html', certificate=certificate)
+    if certificates is None:
+        return render_template('no_certificate.html')  # Handle the case where the user has no certificate
+
+    # Load the certificate image
+    certificate_image = Image.open("CTFd/certificate-ctfd.png")
+
+    # Create a drawing context
+    draw = ImageDraw.Draw(certificate_image)
+
+    font = ImageFont.load_default()  # Or load a custom font using ImageFont.truetype()
+
+    # Define the position to overlay the text
+    x = 100
+    y = 200
+
+    for certificate in certificates:
+        certificate_data = {
+            "ID": certificate.id,
+            "Username": certificate.username,
+            "Team Name": certificate.team_name,
+            "Event Name": certificate.ctf_name,
+            "Team Place": certificate.team_place,
+        }
+
+    # Overlay the fetched data onto the certificate image
+    draw.text((x, y), f"Certificate ID: {certificate_data['ID']}", fill="black", font=font)
+    draw.text((x, y + 50), f"Username: {certificate_data['Username']}", fill="black", font=font)
+    draw.text((x, y + 100), f"Event Name: {certificate_data['Event Name']}", fill="black", font=font)
+    draw.text((x, y + 150), f"Team Name: {certificate_data['Team Name']}", fill="black", font=font)
+    draw.text((x, y + 200), f"Team Place: {certificate_data['Team Place']}", fill="black", font=font)
+    # Add other fields as needed...
+
+    # Save the modified image to a byte stream
+    image_stream = io.BytesIO()
+    certificate_image.save(image_stream, format='PNG')
+    image_stream.seek(0)
+
+    # Return the image as a response
+    return send_file(image_stream, mimetype='image/png', as_attachment=True, attachment_filename='certificate.png')
+
+    return render_template('certificate.html', certificates=certificates)
+
+    # if certificate:
+    #     if is_teams_mode():
+
+    #         print(certificate)
+    #         print(
+    #               f"ID: {certificate.id},"
+    #               f"Team Name: {certificate.team_name},"
+    #               f"User Name: {certificate.username},"
+    #               f"Event Name: {certificate.ctf_name},"
+    #               f"Team Place: {certificate.team_place}"
+    #         )
+    #     else:
+    #         print(
+    #             f"ID: {certificate.id}, "
+    #             f"User Name: {certificate.username}, "
+    #             f"Event Name: {certificate.ctf_name}, "
+    #             f"User's Place: {certificate.user_place}")
+
 
 @views.route("/notifications", methods=["GET"])
 def notifications():
