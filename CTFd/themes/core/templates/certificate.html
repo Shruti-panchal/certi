@@ -20,8 +20,8 @@
                         {% else  %}
                             <p class="card-text">User Place: {{ certificate.user_place }}</p>
                         {% endif %}
-                        <a href="{{ url_for('views.view_certificate', id=certificate.id) }}" class="btn btn-primary">View</a>
-                        <a href="{{ url_for('views.view_certificate', id=certificate.id, download=1) }}" class="btn btn-success">
+                        <a href="{{ url_for('views.view_certificate', id=certificate.id)}}" class="btn btn-primary">View</a>
+                        <a href="{{ url_for('views.view_certificate', id=certificate.id)}}" download="{{ url_for('views.view_certificate', id=certificate.id)}}" class="btn btn-success">
                             <i class="fa fa-download"></i>
                         </a>
                     </div>

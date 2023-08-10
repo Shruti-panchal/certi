@@ -96,7 +96,7 @@ def view_certificate(id):
     user= Users.query.filter_by(id=session["id"]).first()
     team = Teams.query.filter_by(id=user.team_id).first()
     certificate= Certificate.query.get_or_404(id)
-    print(f'**************: {team}')
+    # print(f'**************: {team}')
     # print(f' ***********************: {id}')
     # Load the certificate image
     certificate_image = Image.open("CTFd/certificate-ctfd.png")
@@ -110,63 +110,79 @@ def view_certificate(id):
     x = 100
     y = 200
 
-    # for certificate in certificates:
-    certificate_data = {
-        "ID": certificate.id,
-        "Username": certificate.username,
-        "Team Name": certificate.team_name,
-        "Event Name": certificate.ctf_name,
-        "Team Place": certificate.team_place,
-        "User Place": certificate.user_place,
-    }
-
-    # Overlay the fetched data onto the certificate image
-    draw.text((x, y), f"Certificate ID: {certificate_data['ID']}", fill="black", font=font)
-    draw.text((x, y + 50), f"Username: {certificate_data['Username']}", fill="black", font=font)
-    draw.text((x, y + 100), f"Event Name: {certificate_data['Event Name']}", fill="black", font=font)
-
-    if team!=None:
-        draw.text((x, y + 150), f"Team Name: {certificate_data['Team Name']}", fill="black", font=font)
-        draw.text((x, y + 200), f"Team Place: {certificate_data['Team Place']}", fill="black", font=font)
+    if certificate.team_name is None:
+        text_lines = [
+            f"Certificate ID: {certificate.id}",
+            f"Username: {certificate.username}",
+            f"Event Name: {certificate.ctf_name}",
+            f"User Place: {certificate.user_place}"
+        ]
     else:
-        draw.text((x, y + 150), f"User Place: {certificate_data['User Place']}", fill="black", font=font)
+        text_lines = [
+            f"Certificate ID: {certificate.id}",
+            f"Username: {certificate.username}",
+            f"Event Name: {certificate.ctf_name}",
+            f"Team Name: {certificate.team_name}",
+            f"Team Place: {certificate.team_place}"
+        ]
 
-    # Add other fields as needed...
+        # Overlay the text onto the image
+    for line in text_lines:
+        draw.text((x, y), line, fill="black", font=font)
+        y += 50
 
-    # Save the modified image to a byte stream
+        # Save the modified image to a byte stream
     image_stream = io.BytesIO()
-
     certificate_image.save(image_stream, format='PNG')
     image_stream.seek(0)
 
     if 'download' in request.args:
-        headers={
+        headers = {
             'Content-Disposition': f'attachment; filename=certificate_{certificate.id}.png',
             'Cache-Control': 'no-cache',
         }
 
-    # # Return the image as a response
-        return send_file(image_stream, mimetype='image/png', as_attachment=True, attachment_filename='certificate.png')
+        return send_file(image_stream, mimetype='image/png', as_attachment=True, headers=headers)
     else:
         return send_file(image_stream, mimetype='image/png')
 
-    # if certificate:
-    #     if is_teams_mode():
 
-    #         print(certificate)
-    #         print(
-    #               f"ID: {certificate.id},"
-    #               f"Team Name: {certificate.team_name},"
-    #               f"User Name: {certificate.username},"
-    #               f"Event Name: {certificate.ctf_name},"
-    #               f"Team Place: {certificate.team_place}"
-    #         )
-    #     else:
-    #         print(
-    #             f"ID: {certificate.id}, "
-    #             f"User Name: {certificate.username}, "
-    #             f"Event Name: {certificate.ctf_name}, "
-    #             f"User's Place: {certificate.user_place}")
+    # # for certificate in certificates:
+    # certificate_data = {
+    #     "ID": certificate.id,
+    #     "Username": certificate.username,
+    #     "Team Name": certificate.team_name,
+    #     "Event Name": certificate.ctf_name,
+    #     "Team Place": certificate.team_place,
+    #     "User Place": certificate.user_place,
+    # }
+    #
+    # # Overlay the fetched data onto the certificate image
+    # draw.text((x, y), f"Certificate ID: {certificate_data['ID']}", fill="black", font=font)
+    # draw.text((x, y + 50), f"Username: {certificate_data['Username']}", fill="black", font=font)
+    # draw.text((x, y + 100), f"Event Name: {certificate_data['Event Name']}", fill="black", font=font)
+    #
+    # if certificate.team_name!=None:
+    #     draw.text((x, y + 150), f"Team Name: {certificate_data['Team Name']}", fill="black", font=font)
+    #     draw.text((x, y + 200), f"Team Place: {certificate_data['Team Place']}", fill="black", font=font)
+    # else:
+    #     draw.text((x, y + 150), f"User Place: {certificate_data['User Place']}", fill="black", font=font)
+    #
+    # # Save the modified image to a byte stream
+    # image_stream = io.BytesIO()
+    # certificate_image.save(image_stream, format='PNG')
+    # image_stream.seek(0)
+    #
+    # if 'download' in request.args:
+    #     headers = {
+    #         'Content-Disposition': f'attachment; filename=certificate_{certificate.id}.png',
+    #         'Cache-Control': 'no-cache',
+    #     }
+    # # # Return the image as a response
+    #
+    #     return send_file(image_stream, mimetype='image/png',as_attachment=True, headers=headers)
+    # else:
+    #     return send_file(image_stream, mimetype='image/png')
 
 
 @views.route("/notifications", methods=["GET"])
