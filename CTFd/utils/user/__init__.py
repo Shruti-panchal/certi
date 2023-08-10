@@ -64,26 +64,6 @@ def get_user_place(user_id):
         return user.account.place
     return None
 
-# @cache.memoize(timeout=300)
-# def get_team_place(team_id):
-#     team = Teams.query.filter_by(id=team_id).first()
-#     if team:
-#         return team.place
-#     return None
-# @cache.memoize(timeout=300)
-# def get_user_team_name(user_id):
-#     user = Users.query.filter_by(id=user_id).first()
-#     if user:
-#         return user.team.name
-#     return None
-#
-# @cache.memoize(timeout=300)
-# def get_user_team_name(user_id):
-#     user = Users.query.filter_by(id=Users.id).first()
-#     if user:
-#         return user.account.team_name
-#     return None
-
 @cache.memoize(timeout=300)
 def get_user_score(user_id):
     user = Users.query.filter_by(id=user_id).first()

@@ -204,7 +204,7 @@ def create_app(config="CTFd.config.Config"):
 
         # This allows any changes to the SQLALCHEMY_DATABASE_URI to get pushed back in
         # This is mostly so we can force MySQL's charset
-        app.config['SQLALCHEMY_DATABASE_URI'] =r'sqlite:///C:\Users\DeLL\PycharmProjects\certificcate\CTFd\ctfd.db'
+        app.config['SQLALCHEMY_DATABASE_URI'] =r'sqlite:///C:\Users\DeLL\PycharmProjects\certificcate\CTFd\ctfd2.db'
 
         # Register database
         db.init_app(app)

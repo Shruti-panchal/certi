@@ -1,20 +1,5 @@
 {% extends "base.html" %}
-<style>
-      * { margin: 0; padding: 0; font-family: "Inter", sans-serif; } body {
-      padding: 0; margin: 0; } img { width: 100%; } .logo { position: absolute;
-      width: 100%; top: 120px; z-index: 50; display: flex; justify-content:
-      center; } .logo img { width: 250px; } .relative { position: relative; }
-      .issue { position: absolute; bottom: 110px; left: 320px; } .middle {
-      position: absolute; display: flex; flex-direction: column; align-items:
-      center; top: 365px; width: 100%; } .cerify { font-size: 18px; color:
-      rgb(62, 62, 62); margin-bottom: 4px; } .name { font-size: 40px; margin-top: 10px;
-      font-weight: bold; } .desc { font-size: 18px;margin-top: 30px; color:
-      rgb(62, 62, 62);} .course { font-size: 18px; font-weight: bold;margin-top:
-      85px; } .sign { position: absolute; bottom: 110px; right: 290px; z-index:
-      50; } .sign img { width: 140px; } @media print { html, body { border: 1px
-      solid white; height: 99%; page-break-after: avoid; page-break-before:
-      avoid; } } }
-    </style>
+
 {% block content %}
 	<div class="jumbotron">
 		<div class="container">
@@ -22,54 +7,75 @@
 		</div>
 	</div>
 	<div class="container">
-        <div>
-
-            <div class="relative">
-            <img
-                src="https://cyberyami-mern-bucket.s3.ap-south-1.amazonaws.com/cyber-yami-certi-final.png"
-            />
-            <div class="issue">
-                <p style="font-size: 18px;">{{certificate.date}}</p>
-            </div>
-            <div class="middle">
-                <p class="name">username :{{certificate.username}}</p>
-                <p class="course">{{certificate.ctf_name}}</p>
-            </div>
-            <p style="position: absolute; top:65px;left:75px;font-family: monospace;">
-                Certificate ID: {{certificate.id}}</p>
-            </div>
-
+        <div class="card-deck">
+            {% for certificate in certificate %}
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Certificate ID: {{ certificate.id }}</h5>
+                        <p class="card-text">Username: {{ certificate.username }}</p>
+                        <p class="card-text">Event Name: {{ certificate.ctf_name }}</p>
+                        {% if certificate.team_name!= None %}
+                            <p class="card-text">Team Name: {{ certificate.team_name }}</p>
+                            <p class="card-text">Team Place: {{ certificate.team_place }}</p>
+                        {% else  %}
+                            <p class="card-text">User Place: {{ certificate.user_place }}</p>
+                        {% endif %}
+                        <a href="{{ url_for('views.view_certificate', id=certificate.id) }}" class="btn btn-primary">View</a>
+                        <a href="{{ url_for('views.view_certificate', id=certificate.id, download=1) }}" class="btn btn-success">
+                            <i class="fa fa-download"></i>
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-        {% if certificate  %}
-            <ol>
-                {% for certificate in certificate %}
-                <li>
-                    <h2>
-                    ID: {{ certificate.id }},
-                    {% if certificate.team_id %}
-                        Team Name: {{ certificate.team_name }},
-                    {% endif %}
-                    User Name: {{ certificate.username }},
-                    Event Name: {{ certificate.ctf_name }},
-                    {% if certificate.team_id %}
-                        Team Place: {{ certificate.team_place }}
-                    {% else %}
-                        User's Place: {{ certificate.user_place }}
-                    {% endif %}
-                    </h2>
-                </li>
-                {% endfor %}
-            </ol>
 
-        {% else %}
-        <h2>No Certificates yet. </h2>
-        {% endif %}
-        </div>
+    </div>
 {% endblock %}
 
 
 
 
+<!--<div>--
 
+<!--            <div class="relative">-->
+<!--            <img-->
+<!--                src="https://cyberyami-mern-bucket.s3.ap-south-1.amazonaws.com/cyber-yami-certi-final.png"-->
+<!--            />-->
+<!--            <div class="issue">-->
+<!--                <p style="font-size: 18px;">{{certificate.date}}</p>-->
+<!--            </div>-->
+<!--            <div class="middle">-->
+<!--                <p class="name">username :{{certificate.username}}</p>-->
+<!--                <p class="course">{{certificate.ctf_name}}</p>-->
+<!--            </div>-->
+<!--            <p style="position: absolute; top:65px;left:75px;font-family: monospace;">-->
+<!--                Certificate ID: {{certificate.id}}</p>-->
+<!--            </div>-->
+
+<!--        </div>-->
+<!--        {% if certificate  %}-->
+<!--            <ol>-->
+<!--                {% for certificate in certificate %}-->
+<!--                <li>-->
+<!--                    <h2>-->
+<!--                    ID: {{ certificate.id }},-->
+<!--                    {% if certificate.team_id %}-->
+<!--                        Team Name: {{ certificate.team_name }},-->
+<!--                    {% endif %}-->
+<!--                    User Name: {{ certificate.username }},-->
+<!--                    Event Name: {{ certificate.ctf_name }},-->
+<!--                    {% if certificate.team_id %}-->
+<!--                        Team Place: {{ certificate.team_place }}-->
+<!--                    {% else %}-->
+<!--                        User's Place: {{ certificate.user_place }}-->
+<!--                    {% endif %}-->
+<!--                    </h2>-->
+<!--                </li>-->
+<!--                {% endfor %}-->
+<!--            </ol>-->
+
+<!--        {% else %}-->
+<!--        <h2>No Certificates yet. </h2>-->
+<!--        {% endif %}-->
 
 

@@ -376,7 +376,7 @@ class Users(db.Model):
         from CTFd.utils.crypto import hash_password
 
         return hash_password(str(plaintext))
-
+ 
     @hybrid_property
     def account_id(self):
         from CTFd.utils import get_config
