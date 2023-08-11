@@ -86,9 +86,8 @@ views = Blueprint("views", __name__)
 def certificate():
     user = Users.query.filter_by(id=session["id"]).first()
     certificate = Certificate.query.filter_by(user_id=user.id).all()
-    # print(f'***********: {certificate}')
-    return render_template('certificate.html', certificate=certificate)
 
+    return render_template('certificate.html', certificate=certificate)
 
 @views.route('/certificate/<int:id>', methods=["GET"])
 @authed_only
@@ -96,8 +95,7 @@ def view_certificate(id):
     user= Users.query.filter_by(id=session["id"]).first()
     team = Teams.query.filter_by(id=user.team_id).first()
     certificate= Certificate.query.get_or_404(id)
-    # print(f'**************: {team}')
-    # print(f' ***********************: {id}')
+
     # Load the certificate image
     certificate_image = Image.open("CTFd/certificate-ctfd.png")
 
@@ -145,44 +143,6 @@ def view_certificate(id):
         return send_file(image_stream, mimetype='image/png', as_attachment=True, headers=headers)
     else:
         return send_file(image_stream, mimetype='image/png')
-
-
-    # # for certificate in certificates:
-    # certificate_data = {
-    #     "ID": certificate.id,
-    #     "Username": certificate.username,
-    #     "Team Name": certificate.team_name,
-    #     "Event Name": certificate.ctf_name,
-    #     "Team Place": certificate.team_place,
-    #     "User Place": certificate.user_place,
-    # }
-    #
-    # # Overlay the fetched data onto the certificate image
-    # draw.text((x, y), f"Certificate ID: {certificate_data['ID']}", fill="black", font=font)
-    # draw.text((x, y + 50), f"Username: {certificate_data['Username']}", fill="black", font=font)
-    # draw.text((x, y + 100), f"Event Name: {certificate_data['Event Name']}", fill="black", font=font)
-    #
-    # if certificate.team_name!=None:
-    #     draw.text((x, y + 150), f"Team Name: {certificate_data['Team Name']}", fill="black", font=font)
-    #     draw.text((x, y + 200), f"Team Place: {certificate_data['Team Place']}", fill="black", font=font)
-    # else:
-    #     draw.text((x, y + 150), f"User Place: {certificate_data['User Place']}", fill="black", font=font)
-    #
-    # # Save the modified image to a byte stream
-    # image_stream = io.BytesIO()
-    # certificate_image.save(image_stream, format='PNG')
-    # image_stream.seek(0)
-    #
-    # if 'download' in request.args:
-    #     headers = {
-    #         'Content-Disposition': f'attachment; filename=certificate_{certificate.id}.png',
-    #         'Cache-Control': 'no-cache',
-    #     }
-    # # # Return the image as a response
-    #
-    #     return send_file(image_stream, mimetype='image/png',as_attachment=True, headers=headers)
-    # else:
-    #     return send_file(image_stream, mimetype='image/png')
 
 
 @views.route("/notifications", methods=["GET"])

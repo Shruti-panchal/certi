@@ -16,6 +16,7 @@ from CTFd.models import (
 )
 from CTFd.utils import config
 from CTFd.utils.config import ctf_name
+from CTFd.utils.modes import USERS_MODE, TEAMS_MODE
 
 def during_ctf_time_only(f):
     """
@@ -33,8 +34,8 @@ def during_ctf_time_only(f):
             if ctf_ended():
                 user = Users.query.filter_by(id=session["id"]).first()
                 team = Teams.query.filter_by(id=user.team_id).first()
-
                 certificate = Certificate.query.filter_by(user_id=user.id, ctf_name=config.ctf_name()).first()
+
                 if certificate is None:
                     certificate = Certificate()
 
@@ -43,7 +44,7 @@ def during_ctf_time_only(f):
                 certificate.ctf_name= config.ctf_name()
                 certificate.date= datetime.now()
 
-                if user.team_id:
+                if get_config("user_mode") != USERS_MODE:
                     if team.name:
                         certificate.team_name= team.name
                         certificate.team_place= team.place
@@ -52,7 +53,6 @@ def during_ctf_time_only(f):
 
                 db.session.add(certificate)
                 db.session.commit()
-                # return certificate
 
                 if view_after_ctf():
                     return f(*args, **kwargs)
